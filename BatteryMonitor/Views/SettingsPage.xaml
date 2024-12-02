@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BatteryMonitor.SettingsPage"
+             xmlns:lang="clr-namespace:BatteryMonitor.Languages"
+             xmlns:viewModel="clr-namespace:BatteryMonitor.ViewModel"
+             xmlns:components="clr-namespace:BatteryMonitor.Components"
+             x:DataType="viewModel:BatteryMonitorViewModel"
+             Title="{x:Static lang:Strings.Settings}">
+   
+    <ScrollView>
+        <Border StrokeShape="RoundRectangle 10">
+            <Border.Background>
+                <LinearGradientBrush>
+                    <GradientStop Color="{AppThemeBinding Light=AliceBlue, Dark=WhiteSmoke}" Offset="0.0"/>
+                    <GradientStop Color="{AppThemeBinding Light=Azure,Dark=LightSteelBlue}" Offset="0.35"/>
+                    <GradientStop Color="{AppThemeBinding Light=Aquamarine, Dark=DarkSlateBlue}" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <VerticalStackLayout Padding="10, 45, 10, 0">
+                <components:ThresholdComponent Text="{x:Static lang:Strings.MinLevel}" LabelColor="PaleVioletRed" ImageName="lowbattery.png" Value="{Binding MinLimit, Mode=TwoWay}" StepperMinimumValue="0" StepperMaximumValue="50" />
+
+                <components:ThresholdComponent Margin="0, 30, 0, 0" Text="{x:Static lang:Strings.MaxLevel}" LabelColor="ForestGreen" ImageName="fullcharged.png" Value="{Binding MaxLimit, Mode=TwoWay}" StepperMinimumValue="51" StepperMaximumValue="100"/>
+                
+                <Button Text="{x:Static lang:Strings.Save}" x:Name="btnSave" Clicked="btnSave_Clicked" WidthRequest="200" BackgroundColor="{AppThemeBinding Light=SlateBlue, Dark=CornflowerBlue}" Margin="0, 70, 0, 0" />
+          
+            </VerticalStackLayout>
+        </Border>
+    </ScrollView>
+
+</ContentPage>

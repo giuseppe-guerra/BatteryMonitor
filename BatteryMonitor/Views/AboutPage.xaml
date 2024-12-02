@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BatteryMonitor.AboutPage"
+             xmlns:lang="clr-namespace:BatteryMonitor.Languages"
+             xmlns:shared="clr-namespace:BatteryMonitor.Shared"
+             Title="{x:Static lang:Strings.About}">
+    <ScrollView>
+        <VerticalStackLayout Margin="30" Padding="5" Spacing="5">
+            <Label Text="{x:Static lang:Strings.AppTitle}" FontAttributes="Bold" FontFamily="PermanentMarker" FontSize="20" 
+                   HorizontalOptions="Center" VerticalOptions="Center" />
+
+            <Image Source="superbattery.png" WidthRequest="100" HeightRequest="100" />
+
+            <Label HorizontalTextAlignment="Center" FontAttributes="Italic" Text="Helps you to preserve battery health avoiding full charge cycles!" />
+
+            <Label Margin="0,20,0,0" Text="This is an open source project.&#10;You can find the code and more information on GitHub: " />
+            <Label>
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="{x:Static shared:Constants.GITHUB_URL}"
+                            TextColor="Blue"
+                            TextDecorations="Underline">
+                            <Span.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="GitHubTapGestureRecognizer" />
+                            </Span.GestureRecognizers>
+                        </Span>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+
+            <Label Margin="0, 50, 0, 0" Text="Developed by" HorizontalOptions="End" TextColor="{AppThemeBinding Light=LightSlateGray, Dark=MediumPurple}"/>
+            <Label Text="Giuseppe Guerra" TextColor="CornflowerBlue" FontAttributes="Bold" HorizontalOptions="EndAndExpand"/>
+
+            <Label HorizontalOptions="End">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="{x:Static shared:Constants.EMAIL}" TextColor="Blue" TextDecorations="Underline">
+                            <Span.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="EmailTapGestureRecognizer" />
+                            </Span.GestureRecognizers>
+                        </Span>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+
+            <Label Text="Made in Italy" TextColor="{AppThemeBinding Light=LightSlateGray, Dark=MediumPurple}" HorizontalOptions="End" Margin="0, 20, 0, 0"/>
+            <Label Text="with .NET MAUI"  TextColor="CornflowerBlue" HorizontalOptions="End" />
+
+            <Label Text="Version" TextColor="{AppThemeBinding Light=LightSlateGray, Dark=MediumPurple}" HorizontalOptions="End" Margin="0, 20, 0, 0"/>
+            <Label x:Name="lblVersion" TextColor="CornflowerBlue" HorizontalOptions="End" />
+            
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="BatteryMonitor.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:BatteryMonitor"
+    xmlns:shared="clr-namespace:BatteryMonitor.Shared"
+    Shell.FlyoutBehavior="Flyout"
+    Title="BatteryMonitor"
+    xmlns:lang="clr-namespace:BatteryMonitor.Languages"
+    Shell.BackgroundColor="{StaticResource Primary}"
+    Shell.ForegroundColor="WhiteSmoke">
+
+    <Shell.FlyoutHeaderTemplate>
+        <DataTemplate>
+            <Grid BackgroundColor="{AppThemeBinding Dark=Black, Light={StaticResource Primary}}"
+                  HeightRequest="180">
+                <Image Aspect="AspectFill"
+                       Source="superbattery.png"
+                       Opacity="0.6" />
+                <Label Text="{x:Static lang:Strings.AppTitle}"
+                       TextColor="{AppThemeBinding Dark=White, Light=Magenta}"
+                       FontAttributes="Bold"
+                       FontFamily="PermanentMarker"
+                       FontSize="20"
+                       HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="Center" />
+            </Grid>
+        </DataTemplate>
+    </Shell.FlyoutHeaderTemplate>
+
+    <FlyoutItem Title="{x:Static lang:Strings.Home}" 
+                FlyoutIcon="{AppThemeBinding 
+                    Dark={FontImage FontFamily=FontAwesomeSolid, Color=White, Glyph={x:Static shared:Constants.IconFont_Home}},
+                    Light={FontImage FontFamily=FontAwesomeSolid, Color=Black, Glyph={x:Static shared:Constants.IconFont_Home}}}">
+            <ShellContent Route="MainPage" ContentTemplate="{DataTemplate local:MainPage}"></ShellContent>
+    </FlyoutItem>
+
+    <FlyoutItem Title="{x:Static lang:Strings.Settings}" 
+                FlyoutIcon="{AppThemeBinding 
+                    Dark={FontImage FontFamily=FontAwesomeSolid, Color=White, Glyph={x:Static shared:Constants.IconFont_Settings}},
+                    Light={FontImage FontFamily=FontAwesomeSolid, Color=Black, Glyph={x:Static shared:Constants.IconFont_Settings}}}">
+        <ShellContent Route="Settings" ContentTemplate="{DataTemplate local:SettingsPage}"></ShellContent>
+    </FlyoutItem>
+
+    <FlyoutItem Title="{x:Static lang:Strings.About}" 
+                FlyoutIcon="{AppThemeBinding 
+                     Dark={FontImage FontFamily=FontAwesomeSolid, Color=White, Glyph={x:Static shared:Constants.IconFont_About}},
+                     Light={FontImage FontFamily=FontAwesomeSolid, Color=Black, Glyph={x:Static shared:Constants.IconFont_About}}}">     
+        <ShellContent Route="About" ContentTemplate="{DataTemplate local:AboutPage}"></ShellContent>
+    </FlyoutItem>
+
+    <!--<Shell.FlyoutFooterTemplate>
+        <DataTemplate>
+            <StackLayout>
+                <Label Text="Powered by:"
+                       TextColor="DarkSlateGray"
+                       HorizontalOptions="Center" />
+                <Label Text=".NET MAUI"
+                       FontAttributes="Bold"
+                       TextColor="Black"
+                       HorizontalOptions="Center" />
+            </StackLayout>
+        </DataTemplate>
+    </Shell.FlyoutFooterTemplate>-->
+
+</Shell>

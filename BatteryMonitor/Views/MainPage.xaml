@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="BatteryMonitor.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:droid="clr-namespace:CommunityToolkit.Maui.PlatformConfiguration.AndroidSpecific;assembly=CommunityToolkit.Maui"
+    xmlns:shared="clr-namespace:BatteryMonitor.Shared"
+    xmlns:lang="clr-namespace:BatteryMonitor.Languages"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"   
+    droid:NavigationBar.Color="{StaticResource Primary}"
+    xmlns:viewModel="clr-namespace:BatteryMonitor.ViewModel"
+    x:DataType="viewModel:BatteryMonitorViewModel"
+    NavigationPage.HasNavigationBar="False">
+
+    <ScrollView VerticalScrollBarVisibility="Never">
+        <VerticalStackLayout Padding="30,0" Spacing="20">
+
+            <Grid RowDefinitions="0.4*, 0.6*" Margin="20,0,20,0">
+                <Border Grid.RowSpan="2" Background="{StaticResource Primary}" HeightRequest="80" StrokeShape="RoundRectangle 0, 0, 20, 20" />
+                <Label
+                    Grid.Row="2"
+                    FontFamily="PermanentMarker"
+                    HorizontalOptions="CenterAndExpand"
+                    Style="{StaticResource SubHeadline}"
+                    Text="{x:Static lang:Strings.AppTitle}"
+                    TextColor="White"
+                    VerticalOptions="CenterAndExpand" />
+            </Grid>
+
+            <Grid
+                Margin="0,30,0,0"
+                ColumnDefinitions="0.3*, 0.7*"
+                HeightRequest="300"
+                HorizontalOptions="CenterAndExpand"
+                RowDefinitions="0.8*, 0.2*"
+                WidthRequest="350">
+
+
+                <VerticalStackLayout
+                    Grid.Column="1"
+                    Margin="50,0,0,0"
+                    HorizontalOptions="CenterAndExpand"
+                    VerticalOptions="Center">
+                    <Label FontSize="Medium">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="{x:Static lang:Strings.BatteryLevel}" TextColor="SlateGray" />
+                                <Span Text=": " TextColor="SlateGray" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Label
+                        x:Name="txtBatteryPercent"
+                        Style="{StaticResource SubHeadline}"
+                        Text="{Binding BatteryPercentage}">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span FontAttributes="Bold" Text="{Binding BatteryPercentage}" />
+                                <Span FontAttributes="Bold" Text="%" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Row="1" Grid.ColumnSpan="2">
+                    <Label
+                        FontSize="Medium"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="{x:Static lang:Strings.ServiceStatus}" TextColor="SlateGray" />
+                                <Span Text=": " TextColor="SlateGray" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+
+                    <HorizontalStackLayout HorizontalOptions="Center" Margin="0, 5, 0, 0">
+                        <skia:SKLottieView Margin="-40, -20, 0, 0"
+                           x:Name="greenLight"
+                           Source="green.json"
+                           HeightRequest="80" WidthRequest="80" RepeatCount="-1" IsAnimationEnabled="True"
+                           IsVisible="{Binding IsServiceRunning}">
+                            <skia:SKLottieView.Behaviors>
+                                <toolkit:TouchBehavior
+                                     DefaultAnimationDuration="200"
+                                     DefaultAnimationEasing="{x:Static Easing.CubicInOut}"
+                                     PressedScale="1.3">
+                                </toolkit:TouchBehavior>
+                            </skia:SKLottieView.Behaviors>
+                        </skia:SKLottieView>
+
+                        <skia:SKLottieView Margin="-40, -20, 0, 0" 
+                           x:Name="redLight"
+                           Source="red.json"
+                           HeightRequest="80" WidthRequest="80" RepeatCount="-1" IsAnimationEnabled="True"
+                           IsVisible="{Binding IsNotServiceRunning}">
+                            <skia:SKLottieView.Behaviors>
+                                <toolkit:TouchBehavior
+                                     DefaultAnimationDuration="200"
+                                     DefaultAnimationEasing="{x:Static Easing.CubicInOut}"
+                                     PressedScale="1.3">
+                                </toolkit:TouchBehavior>
+                            </skia:SKLottieView.Behaviors>
+                        </skia:SKLottieView>
+
+                        <Label HorizontalOptions="End" Margin="0, 5, 0, 0" FontAttributes="Bold" Text="{Binding ServiceStatus}" FontSize="Title" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+
+                <Border
+                    Grid.Row="1"
+                    Grid.ColumnSpan="2"
+                    Margin="0,-30"
+                    HeightRequest="5"
+                    HorizontalOptions="Center"
+                    StrokeShape="RoundRectangle 0,0,15,15"
+                    VerticalOptions="End"
+                    WidthRequest="260">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Style.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsServiceRunning}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{x:Static shared:DefaultSettings.RunningColor}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsServiceRunning}" Value="False">
+                                    <Setter Property="BackgroundColor" Value="{x:Static shared:DefaultSettings.NotRunningColor}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                </Border>
+
+                <Image
+                    Grid.ColumnSpan="2"
+                    Margin="0,0,140,0"
+                    Aspect="AspectFit"
+                    HeightRequest="190"
+                    HorizontalOptions="Center"
+                    Source="superbattery.png"
+                    VerticalOptions="Center" />
+
+            </Grid>
+
+            <VerticalStackLayout
+                Margin="70"
+                HorizontalOptions="Center"
+                Spacing="30">
+                <Button
+                    x:Name="btnStartService"
+                    Clicked="btnStartService_Clicked"
+                    IsEnabled="{Binding IsNotServiceRunning}"
+                    Text="Start"
+                    WidthRequest="200" />
+
+                <Button
+                    x:Name="btnStopService"
+                    Clicked="btnStopService_Clicked"
+                    IsEnabled="{Binding IsServiceRunning}"
+                    Text="Stop"
+                    WidthRequest="200" />
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

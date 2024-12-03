@@ -10,7 +10,7 @@ When the thresholds are reached then it bores and stresses the user with a notif
 
 
 
-<a href="https://play.google.com/store/apps/details?id=com.toyokenstudio.batterymonitor"><img src="https://github.com/user-attachments/assets/5b1c1cbb-24cf-4de3-9d49-5cd2db008c99" width="170" /></a>  
+<a href="https://play.google.com/store/apps/details?id=com.toyokenstudio.batterymonitor"><img src="https://github.com/user-attachments/assets/16d20414-b1e5-452e-9f2d-9024ae24ae54" width="170" /></a>  
 <a href="https://play.google.com/store/apps/details?id=com.toyokenstudio.batterymonitor">Download from Google Play Store</a> 
 
 

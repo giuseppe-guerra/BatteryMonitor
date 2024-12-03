@@ -27,17 +27,19 @@ It's not necessary to open the app every time: the service starts automatically 
 For technical and theorical details, please refers to [References section](#references).
 
 ## Screenshots
-<img src="https://github.com/user-attachments/assets/30963ee3-36fb-457c-befd-0d1c65d827f5" width="300" height="650">
+<img src="https://github.com/user-attachments/assets/e7ff1d1c-e20a-4059-baa7-4a491af12a6f" width="300" height="650">
 
-<img src="https://github.com/user-attachments/assets/fcc7453a-cdb1-46ca-b4b0-aa1ca0a0e04c" width="300" height="650">   
+<img src="https://github.com/user-attachments/assets/f4d80bff-4886-4d87-934e-6e26faad327d" width="300" height="650">   
 
-<img src="https://github.com/user-attachments/assets/3ec4d23f-3716-4eda-9d35-0abda206d766" width="300" height="650">   
+<img src="https://github.com/user-attachments/assets/48f50c7d-4635-4b74-9009-334bfd583801" width="300" height="650">   
 
-<img src="https://github.com/user-attachments/assets/a90a1b9f-171c-47b3-9e44-b49b9559a9fa" width="300" height="650">
+<img src="https://github.com/user-attachments/assets/028543a4-a7ae-496a-8682-c314720b749c" width="300" height="650">
 
-<img src="https://github.com/user-attachments/assets/8a6ed42c-0f46-4e66-ba35-0fe06f26f936" width="300" height="650">
+<img src="https://github.com/user-attachments/assets/063beebe-e734-448f-9aec-c2f2629577c8" width="300" height="650">
 
-<img src="https://github.com/user-attachments/assets/421632ff-a385-4637-9087-2241396ce030" width="300" height="650">
+<img src="https://github.com/user-attachments/assets/8a2a5900-c812-45ef-9d02-1d8e0a39027c" width="300" height="650">
+
+
 
 
 ## Features

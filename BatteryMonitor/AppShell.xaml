@@ -50,18 +50,29 @@
         <ShellContent Route="About" ContentTemplate="{DataTemplate local:AboutPage}"></ShellContent>
     </FlyoutItem>
 
-    <!--<Shell.FlyoutFooterTemplate>
-        <DataTemplate>
-            <StackLayout>
-                <Label Text="Powered by:"
-                       TextColor="DarkSlateGray"
-                       HorizontalOptions="Center" />
-                <Label Text=".NET MAUI"
-                       FontAttributes="Bold"
-                       TextColor="Black"
-                       HorizontalOptions="Center" />
-            </StackLayout>
-        </DataTemplate>
-    </Shell.FlyoutFooterTemplate>-->
+    <Shell.FlyoutFooter>
+        <VerticalStackLayout Padding="10" BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource DarkPrimaryBackground}}">
+            <Label Text="{x:Static lang:Strings.AppTheme}"
+                    TextColor="White"
+                    HorizontalOptions="Center" />
+            <Grid ColumnDefinitions="*, 50, *" Padding="10">
+                <Image Grid.Column="0" HorizontalOptions="End" Margin="10">
+                    <Image.Source>
+                        <FontImageSource FontFamily="FontAwesomeSolid" Glyph="{x:Static shared:Constants.IconFont_Sun}" Color="White" />
+                    </Image.Source>
+                </Image> 
+                <Switch x:Name="ThemeSwitch"
+                        Toggled="OnThemeSwitchToggled"
+                        HorizontalOptions="Center" 
+                        VerticalOptions="CenterAndExpand" 
+                        Grid.Column="1" />
+                <Image Grid.Column="2" HorizontalOptions="Start" Margin="10">
+                    <Image.Source>
+                        <FontImageSource FontFamily="FontAwesomeSolid" Glyph="{x:Static shared:Constants.IconFont_Moon}" Color="White" />
+                    </Image.Source>
+                </Image>
+            </Grid>
+        </VerticalStackLayout>
+    </Shell.FlyoutFooter>
 
 </Shell>

@@ -138,9 +138,6 @@
   <data name="MinLevel" xml:space="preserve">
     <value>Livello Minimo</value>
   </data>
-  <data name="Notification Title" xml:space="preserve">
-    <value>Avviso Battery Monitor</value>
-  </data>
   <data name="NotificationChannelName" xml:space="preserve">
     <value>Raggiungimento soglie</value>
   </data>
@@ -170,5 +167,11 @@
   </data>
   <data name="WarningLowLevel" xml:space="preserve">
     <value>Batteria scarica!</value>
+  </data>
+  <data name="Notification Title" xml:space="preserve">
+    <value>Avviso Battery Monitor</value>
+  </data>
+  <data name="AppTheme" xml:space="preserve">
+    <value>Tema App</value>
   </data>
 </root>

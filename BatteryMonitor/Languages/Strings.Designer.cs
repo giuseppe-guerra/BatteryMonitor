@@ -70,6 +70,15 @@ namespace BatteryMonitor.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to App Theme.
+        /// </summary>
+        internal static string AppTheme {
+            get {
+                return ResourceManager.GetString("AppTheme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Battery Monitor.
         /// </summary>
         internal static string AppTitle {
@@ -120,6 +129,15 @@ namespace BatteryMonitor.Languages {
         internal static string MinLevel {
             get {
                 return ResourceManager.GetString("MinLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string Notification_Title {
+            get {
+                return ResourceManager.GetString("Notification Title", resourceCulture);
             }
         }
         

@@ -8,20 +8,28 @@ using BatteryMonitor.Shared;
 
 namespace BatteryMonitor.Platforms.Android;
 
-//[Service]
 [Service(ForegroundServiceType = global::Android.Content.PM.ForegroundService.TypeSpecialUse)]
 internal class BackgroundService : Service
 {
     Timer timer = null;
     int myId = (new object()).GetHashCode();
-    private readonly IBinder binder = new LocalBinder();
+    private readonly IBinder binder;
     int lowLevel = 0;
     int highLevel = 0;
+
+    public BackgroundService()
+    {
+        binder = new LocalBinder(this);
+    }
 
 
     public class LocalBinder : Binder
     {
-        public BackgroundService GetService() => this.GetService();
+        readonly BackgroundService service;
+
+        public BackgroundService GetService() => service;
+
+        public LocalBinder(BackgroundService service) => this.service = service;
     }
 
 
@@ -33,11 +41,6 @@ internal class BackgroundService : Service
 
     public override StartCommandResult OnStartCommand(Intent? intent, StartCommandFlags flags, int startId)
     {
-        //var input = intent.GetStringExtra("inputExtra");
-
-        //lowLevel = intent.GetIntExtra("lowLevelValue", 0);
-        //highLevel = intent.GetIntExtra("highLevelValue", 0);
-        
         var notificationIntent = new Intent(this, typeof(MainActivity));
         notificationIntent.SetAction("USER_TAPPED_NOTIFICATION");
 
@@ -46,6 +49,7 @@ internal class BackgroundService : Service
         var notification = new NotificationCompat.Builder(this, MainApplication.ChannelIdLevelChanges)
             .SetSmallIcon(Resource.Drawable.iconbattery32)
             .SetPriority(NotificationCompat.PriorityHigh)
+            .SetOngoing(true)
             .SetContentTitle(Strings.AppTitle)
             .SetContentText(Strings.ServiceStarted)
             .SetContentIntent(pendingIntent);
@@ -60,8 +64,6 @@ internal class BackgroundService : Service
 
     void Timer_Elapsed(object state)
     {
-        //AndroidServiceManager.IsRunning = true;
-
         CheckBattery(state);
     }
 
@@ -98,5 +100,25 @@ internal class BackgroundService : Service
             notification.SetContentText($"{Strings.WarningHighLevel} ({batteryLevel}%)");
             StartForeground(myId, notification.Build());
         }
+    }
+
+    public override void OnDestroy()
+    {
+        try
+        {
+            timer?.Dispose();
+            timer = null;
+        }
+        catch { }
+
+        try
+        {
+            StopForeground(true);
+        }
+        catch { }
+
+        AndroidServiceManager.IsRunning = false;
+
+        base.OnDestroy();
     }
 }

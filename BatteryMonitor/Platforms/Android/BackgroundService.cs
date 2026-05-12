@@ -8,7 +8,9 @@ using BatteryMonitor.Shared;
 
 namespace BatteryMonitor.Platforms.Android;
 
-[Service(ForegroundServiceType = global::Android.Content.PM.ForegroundService.TypeSpecialUse)]
+// Explicit Java service name and exported setting so Android matches the
+// manifest entry and delivers notifications properly (including to wearables).
+[Service(Name = "com.toyokenstudio.batterymonitor.BackgroundService", Exported = false, ForegroundServiceType = global::Android.Content.PM.ForegroundService.TypeSpecialUse)]
 internal class BackgroundService : Service
 {
     Timer timer = null;

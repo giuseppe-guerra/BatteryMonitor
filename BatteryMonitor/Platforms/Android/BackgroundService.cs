@@ -43,6 +43,19 @@ internal class BackgroundService : Service
 
     public override StartCommandResult OnStartCommand(Intent? intent, StartCommandFlags flags, int startId)
     {
+        // Ensure notification channel exists (in case Application.OnCreate didn't run or manifest wiring changed)
+        if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+        {
+#pragma warning disable CA1416
+            var serviceChannelForLevelChanges = new NotificationChannel(MainApplication.ChannelIdLevelChanges, Strings.NotificationChannelName, NotificationImportance.High);
+
+            if (GetSystemService(NotificationService) is NotificationManager manager)
+            {
+                manager.CreateNotificationChannel(serviceChannelForLevelChanges);
+            }
+#pragma warning restore CA1416
+        }
+
         var notificationIntent = new Intent(this, typeof(MainActivity));
         notificationIntent.SetAction("USER_TAPPED_NOTIFICATION");
 

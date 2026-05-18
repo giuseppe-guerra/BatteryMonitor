@@ -4,6 +4,7 @@ using Android.OS;
 using Android.Widget;
 using AndroidX.Core.Content;
 using BatteryMonitor.Languages;
+using BatteryMonitor.Shared;
 
 
 namespace BatteryMonitor.Platforms.Android;
@@ -21,6 +22,9 @@ public class BootReceiverNS : BroadcastReceiver
             serviceIntent.AddFlags(ActivityFlags.NewTask);
 
             Toast.MakeText(context, $"{Strings.AppTitle} - {Strings.BootReceiverStartMessage}", ToastLength.Long)?.Show();
+
+            // Persist that service should be running after boot
+            Preferences.Default.Set(Constants.SERVICE_RUNNING, true);
 
             if (Build.VERSION.SdkInt >= BuildVersionCodes.O) 
             { 

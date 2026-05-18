@@ -59,19 +59,28 @@ internal class BackgroundService : Service
         var notificationIntent = new Intent(this, typeof(MainActivity));
         notificationIntent.SetAction("USER_TAPPED_NOTIFICATION");
 
-        var pendingIntent = PendingIntent.GetActivity(this, 0, notificationIntent, PendingIntentFlags.Immutable);
+        var pendingIntent = PendingIntent.GetActivity(this, 0, notificationIntent, PendingIntentFlags.Immutable | PendingIntentFlags.UpdateCurrent);
 
         var notification = new NotificationCompat.Builder(this, MainApplication.ChannelIdLevelChanges)
             .SetSmallIcon(Resource.Drawable.iconbattery32)
             .SetPriority(NotificationCompat.PriorityHigh)
             .SetOngoing(true)
+            .SetCategory(Notification.CategoryService)
             .SetContentTitle(Strings.AppTitle)
             .SetContentText(Strings.ServiceStarted)
             .SetContentIntent(pendingIntent);
 
         StartForeground(myId, notification.Build());
 
-        timer = new Timer(Timer_Elapsed, notification, 0, Constants.TimerPeriod);
+        // Mark service as running so app UI can reflect correct state
+        AndroidServiceManager.IsRunning = true;
+        // Persist service running state so app can know service was started (e.g. after reboot)
+        Preferences.Default.Set(Constants.SERVICE_RUNNING, true);
+
+        // Start timer. Do not pass the NotificationCompat.Builder instance between threads
+        // because it's not guaranteed to be thread-safe. Build notifications on the main
+        // thread when needed.
+        timer = new Timer(Timer_Elapsed, null, 0, Constants.TimerPeriod);
 
         return StartCommandResult.Sticky;
     }
@@ -100,20 +109,53 @@ internal class BackgroundService : Service
         lowLevel = Preferences.Default.Get(Constants.MIN_VALUE, DefaultSettings.LowLevelWarningValue);
         highLevel = Preferences.Default.Get(Constants.MAX_VALUE, DefaultSettings.HighLevelWarningValue);
 
+        // Build and post notifications on the main thread to avoid thread-safety issues
         if (batteryLevel <= lowLevel && BatteryUtility.GetBatteryStatus() != BatteryState.Charging)
         {
-            var notification = (NotificationCompat.Builder)state;
-            notification.SetContentTitle(Strings.NotificationTitle);
-            notification.SetContentText($"{Strings.WarningLowLevel} ({batteryLevel}%)");
-            StartForeground(myId, notification.Build());
+            var text = $"{Strings.WarningLowLevel} ({batteryLevel}%)";
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                var notificationIntent = new Intent(this, typeof(MainActivity));
+                notificationIntent.SetAction("USER_TAPPED_NOTIFICATION");
+                var pendingIntent = PendingIntent.GetActivity(this, 0, notificationIntent, PendingIntentFlags.Immutable | PendingIntentFlags.UpdateCurrent);
+
+                // Use a non-ongoing notification for threshold alerts so they can be mirrored
+                // to connected devices (wearables) and behave like a normal alert.
+                var builder = new NotificationCompat.Builder(this, MainApplication.ChannelIdLevelChanges)
+                    .SetSmallIcon(Resource.Drawable.iconbattery32)
+                    .SetPriority(NotificationCompat.PriorityHigh)
+                    .SetOngoing(false)
+                    .SetCategory(Notification.CategoryRecommendation)
+                    .SetAutoCancel(true)
+                    .SetContentTitle(Strings.NotificationTitle)
+                    .SetContentText(text)
+                    .SetContentIntent(pendingIntent);
+
+                StartForeground(myId, builder.Build());
+            });
         }
 
         if (batteryLevel >= highLevel && BatteryUtility.GetBatteryStatus() == BatteryState.Charging)
         {
-            var notification = (NotificationCompat.Builder)state;
-            notification.SetContentTitle(Strings.NotificationTitle);
-            notification.SetContentText($"{Strings.WarningHighLevel} ({batteryLevel}%)");
-            StartForeground(myId, notification.Build());
+            var text = $"{Strings.WarningHighLevel} ({batteryLevel}%)";
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                var notificationIntent = new Intent(this, typeof(MainActivity));
+                notificationIntent.SetAction("USER_TAPPED_NOTIFICATION");
+                var pendingIntent = PendingIntent.GetActivity(this, 0, notificationIntent, PendingIntentFlags.Immutable | PendingIntentFlags.UpdateCurrent);
+
+                var builder = new NotificationCompat.Builder(this, MainApplication.ChannelIdLevelChanges)
+                    .SetSmallIcon(Resource.Drawable.iconbattery32)
+                    .SetPriority(NotificationCompat.PriorityHigh)
+                    .SetOngoing(false)
+                    .SetCategory(Notification.CategoryRecommendation)
+                    .SetAutoCancel(true)
+                    .SetContentTitle(Strings.NotificationTitle)
+                    .SetContentText(text)
+                    .SetContentIntent(pendingIntent);
+
+                StartForeground(myId, builder.Build());
+            });
         }
     }
 
@@ -133,6 +175,7 @@ internal class BackgroundService : Service
         catch { }
 
         AndroidServiceManager.IsRunning = false;
+        Preferences.Default.Set(Constants.SERVICE_RUNNING, false);
 
         base.OnDestroy();
     }

@@ -10,7 +10,7 @@
 
         <Border Grid.Column="1" BackgroundColor="Azure" HorizontalOptions="Fill" StrokeShape="RoundRectangle 6">
             <VerticalStackLayout Margin="30, 30, 0, 0">
-                <Label Text="{Binding Text}" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light=LightSlateGray, Dark=Gray}"/>
+                <Label Text="{Binding Text}" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light=LightSlateGray, Dark=DarkSlateBlue}" WidthRequest="200" />
                 <VerticalStackLayout Margin="10" HorizontalOptions="Center">
                     <Label Text="{Binding Value}" TextColor="{Binding LabelColor}" FontSize="Large" HorizontalTextAlignment="Center"/>
                     <Stepper Minimum="{Binding StepperMinimumValue}" Maximum="{Binding StepperMaximumValue}" Increment="1" Value="{Binding Value}" />

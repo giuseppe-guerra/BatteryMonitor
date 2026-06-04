@@ -17,6 +17,7 @@ internal class BackgroundService : Service
     private readonly IBinder binder = new LocalBinder();
     int lowLevel = 0;
     int highLevel = 0;
+    DateTime lastNotificationTime = DateTime.MinValue;
 
 
     public class LocalBinder : Binder
@@ -83,20 +84,32 @@ internal class BackgroundService : Service
         lowLevel = Preferences.Default.Get(Constants.MIN_VALUE, DefaultSettings.LowLevelWarningValue);
         highLevel = Preferences.Default.Get(Constants.MAX_VALUE, DefaultSettings.HighLevelWarningValue);
 
-        if (batteryLevel <= lowLevel && BatteryUtility.GetBatteryStatus() != BatteryState.Charging)
+        var cooldownMinutes = Preferences.Default.Get(Constants.NOTIFICATION_COOLDOWN, DefaultSettings.NotificationCooldownMinutes);
+        var now = DateTime.UtcNow;
+        var elapsedTime= (now - lastNotificationTime);
+        var cooldownElapsed = elapsedTime.TotalMinutes >= cooldownMinutes;
+
+        // Debug info
+        if (!cooldownElapsed) System.Diagnostics.Debug.WriteLine($"Notification checked but delayed (elapsed ms: {elapsedTime.TotalMilliseconds}).");
+        else System.Diagnostics.Debug.WriteLine($"Notification checked and showed (elapsed ms: {elapsedTime.TotalMilliseconds}).");
+        // Debug info
+
+        if (batteryLevel <= lowLevel && BatteryUtility.GetBatteryStatus() != BatteryState.Charging && cooldownElapsed)
         {
             var notification = (NotificationCompat.Builder)state;
             notification.SetContentTitle(Strings.NotificationTitle);
             notification.SetContentText($"{Strings.WarningLowLevel} ({batteryLevel}%)");
             StartForeground(myId, notification.Build());
+            lastNotificationTime = now;
         }
 
-        if (batteryLevel >= highLevel && BatteryUtility.GetBatteryStatus() == BatteryState.Charging)
+        if (batteryLevel >= highLevel && BatteryUtility.GetBatteryStatus() == BatteryState.Charging && cooldownElapsed)
         {
             var notification = (NotificationCompat.Builder)state;
             notification.SetContentTitle(Strings.NotificationTitle);
             notification.SetContentText($"{Strings.WarningHighLevel} ({batteryLevel}%)");
             StartForeground(myId, notification.Build());
+            lastNotificationTime = now;
         }
     }
 }

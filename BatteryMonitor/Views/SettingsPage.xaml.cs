@@ -25,6 +25,7 @@ public partial class SettingsPage : ContentPage
     {
         Preferences.Default.Set(Constants.MIN_VALUE, viewModel.MinLimit);
         Preferences.Default.Set(Constants.MAX_VALUE, viewModel.MaxLimit);
+        Preferences.Default.Set(Constants.NOTIFICATION_COOLDOWN, viewModel.NotificationCooldownMinutes);
     }
 
     protected override void OnNavigatingFrom(NavigatingFromEventArgs args)

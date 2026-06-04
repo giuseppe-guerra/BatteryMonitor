@@ -15,6 +15,9 @@ public partial class BatteryMonitorViewModel : ObservableObject
     private int maxLimit;
 
     [ObservableProperty]
+    private int notificationCooldownMinutes;
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsNotServiceRunning))]
     private bool isServiceRunning;
 

@@ -7,6 +7,8 @@ public static class Constants
 
     public const string SERVICE_RUNNING = "ServiceRunning";
 
+    public const string NOTIFICATION_COOLDOWN = "NotificationCooldown";
+
     public const string APP_THEME = "AppTheme";
 
 #if DEBUG

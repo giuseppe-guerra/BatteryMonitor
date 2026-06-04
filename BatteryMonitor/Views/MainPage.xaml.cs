@@ -83,6 +83,7 @@ public partial class MainPage : ContentPage
     {
         batteryMonitorModel.MinLimit = Preferences.Default.Get(Constants.MIN_VALUE, DefaultSettings.LowLevelWarningValue);
         batteryMonitorModel.MaxLimit = Preferences.Default.Get(Constants.MAX_VALUE, DefaultSettings.HighLevelWarningValue);
+        batteryMonitorModel.NotificationCooldownMinutes = Preferences.Default.Get(Constants.NOTIFICATION_COOLDOWN, DefaultSettings.NotificationCooldownMinutes);
 
         if (Preferences.Default.Get(Constants.SERVICE_RUNNING, false))
         {

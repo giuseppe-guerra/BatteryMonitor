@@ -177,4 +177,7 @@
   <data name="AppTheme" xml:space="preserve">
     <value>App Theme</value>
   </data>
+  <data name="NotificationCooldown" xml:space="preserve">
+    <value>Delay between notification (seconds)</value>
+  </data>
 </root>

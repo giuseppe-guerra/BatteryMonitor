@@ -21,10 +21,12 @@
             <VerticalStackLayout Padding="10, 45, 10, 0">
                 <components:ThresholdComponent Text="{x:Static lang:Strings.MinLevel}" LabelColor="PaleVioletRed" ImageName="lowbattery.png" Value="{Binding MinLimit, Mode=TwoWay}" StepperMinimumValue="0" StepperMaximumValue="50" />
 
-                <components:ThresholdComponent Margin="0, 30, 0, 0" Text="{x:Static lang:Strings.MaxLevel}" LabelColor="ForestGreen" ImageName="fullcharged.png" Value="{Binding MaxLimit, Mode=TwoWay}" StepperMinimumValue="51" StepperMaximumValue="100"/>
+                <components:ThresholdComponent Margin="0, 30, 0, 0" Text="{x:Static lang:Strings.MaxLevel}" SubText="" LabelColor="ForestGreen" ImageName="fullcharged.png" Value="{Binding MaxLimit, Mode=TwoWay}" StepperMinimumValue="51" StepperMaximumValue="100"/>
+
+                <components:ThresholdComponent Margin="0, 30, 0, 0" Text="{x:Static lang:Strings.NotificationCooldown}" SubText="(in seconds)" LabelColor="{AppThemeBinding Light=LightSlateGray, Dark=Gray}" ImageName="delay.png" Value="{Binding NotificationCooldownMinutes, Mode=TwoWay}" StepperMinimumValue="1" StepperMaximumValue="10"/>
                 
                 <Button Text="{x:Static lang:Strings.Save}" x:Name="btnSave" Clicked="btnSave_Clicked" WidthRequest="200" BackgroundColor="{AppThemeBinding Light=SlateBlue, Dark=CornflowerBlue}" Margin="0, 70, 0, 0" />
-          
+
             </VerticalStackLayout>
         </Border>
     </ScrollView>

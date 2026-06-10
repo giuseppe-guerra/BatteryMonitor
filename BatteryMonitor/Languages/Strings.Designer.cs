@@ -151,7 +151,7 @@ namespace BatteryMonitor.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delay between notification (seconds).
+        ///   Looks up a localized string similar to Delay between notification (minutes).
         /// </summary>
         internal static string NotificationCooldown {
             get {

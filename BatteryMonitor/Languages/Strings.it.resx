@@ -179,6 +179,6 @@
     <value>Tema App</value>
   </data>
   <data name="NotificationCooldown" xml:space="preserve">
-    <value>Ritardo tra le notifiche (secondi)</value>
+    <value>Ritardo tra le notifiche (minuti)</value>
   </data>
 </root>

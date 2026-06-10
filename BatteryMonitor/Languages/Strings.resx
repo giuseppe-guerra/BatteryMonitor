@@ -178,6 +178,6 @@
     <value>App Theme</value>
   </data>
   <data name="NotificationCooldown" xml:space="preserve">
-    <value>Delay between notification (seconds)</value>
+    <value>Delay between notification (minutes)</value>
   </data>
 </root>

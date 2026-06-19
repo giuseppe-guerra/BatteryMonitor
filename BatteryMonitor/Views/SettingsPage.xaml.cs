@@ -21,6 +21,11 @@ public partial class SettingsPage : ContentPage
         await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
     }
 
+    private async void btnViewLogs_Clicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync(nameof(LogsPage));
+    }
+
     private void SetPreferences()
     {
         Preferences.Default.Set(Constants.MIN_VALUE, viewModel.MinLimit);

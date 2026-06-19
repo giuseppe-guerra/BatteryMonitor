@@ -1,4 +1,5 @@
-﻿using BatteryMonitor.ViewModel;
+﻿using BatteryMonitor.Data;
+using BatteryMonitor.ViewModel;
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using SkiaSharp.Views.Maui.Controls.Hosting;
@@ -22,10 +23,15 @@ namespace BatteryMonitor
                     fonts.AddFont("fa-solid-900.ttf", "FontAwesomeSolid");
                 });
 
+            var logService = new AppLogService();
+            AppLogService.SetInstance(logService);
+            builder.Services.AddSingleton(logService);
+
             builder.Services.AddSingleton<BatteryMonitorViewModel>();
             builder.Services.AddSingleton<MainPage>();
             builder.Services.AddSingleton<SettingsPage>();
             builder.Services.AddSingleton<AboutPage>();
+            builder.Services.AddTransient<LogsPage>();
 
 #if DEBUG
     		builder.Logging.AddDebug();

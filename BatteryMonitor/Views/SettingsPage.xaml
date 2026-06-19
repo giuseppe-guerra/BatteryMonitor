@@ -27,6 +27,8 @@
                 
                 <Button Text="{x:Static lang:Strings.Save}" x:Name="btnSave" Clicked="btnSave_Clicked" WidthRequest="200" BackgroundColor="{AppThemeBinding Light=SlateBlue, Dark=CornflowerBlue}" Margin="0, 70, 0, 0" />
 
+                <Button Text="View Logs" x:Name="btnViewLogs" Clicked="btnViewLogs_Clicked" WidthRequest="200" BackgroundColor="{AppThemeBinding Light=DimGray, Dark=Gray}" Margin="0, 15, 0, 0" />
+
             </VerticalStackLayout>
         </Border>
     </ScrollView>

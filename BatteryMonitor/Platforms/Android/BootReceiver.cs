@@ -4,6 +4,7 @@ using Android.OS;
 using Android.Widget;
 using AndroidX.Core.Content;
 using BatteryMonitor.Languages;
+using BatteryMonitor.Shared;
 
 
 namespace BatteryMonitor.Platforms.Android;
@@ -14,23 +15,26 @@ public class BootReceiverNS : BroadcastReceiver
 {
     public override void OnReceive(Context? context, Intent? intent)
     {
-        if (intent?.Action == Intent.ActionBootCompleted)
+        if (intent?.Action != Intent.ActionBootCompleted || context == null)
+            return;
+
+        // Only restart if the service was running before reboot
+        bool wasRunning = Preferences.Default.Get(Constants.SERVICE_RUNNING, false);
+        if (!wasRunning)
+            return;
+
+        var serviceIntent = new Intent(context, typeof(BackgroundService));
+        serviceIntent.AddFlags(ActivityFlags.NewTask);
+
+        Toast.MakeText(context, $"{Strings.AppTitle} - {Strings.BootReceiverStartMessage}", ToastLength.Long)?.Show();
+
+        if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
         {
-            var serviceIntent = new Intent(context, typeof(BackgroundService));
-            
-            serviceIntent.AddFlags(ActivityFlags.NewTask);
-
-            Toast.MakeText(context, $"{Strings.AppTitle} - {Strings.BootReceiverStartMessage}", ToastLength.Long)?.Show();
-
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.O) 
-            { 
-                ContextCompat.StartForegroundService(context, serviceIntent);
-            }
-            else
-            {
-                context.StartService(serviceIntent);
-            }
-
+            ContextCompat.StartForegroundService(context, serviceIntent);
+        }
+        else
+        {
+            context.StartService(serviceIntent);
         }
     }
 }

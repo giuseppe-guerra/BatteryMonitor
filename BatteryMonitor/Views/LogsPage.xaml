@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BatteryMonitor.LogsPage"
+             xmlns:data="clr-namespace:BatteryMonitor.Data"
+             Title="Logs">
+
+    <Grid RowDefinitions="*, Auto" Padding="10">
+
+        <RefreshView x:Name="LogsRefreshView" Grid.Row="0" Refreshing="LogsRefreshView_Refreshing">
+            <CollectionView x:Name="LogsCollection">
+                <CollectionView.EmptyView>
+                    <Label Text="No logs available."
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           FontSize="16"
+                           TextColor="Gray" />
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="data:LogEntry">
+                        <Border Margin="0,4" Padding="10" StrokeShape="RoundRectangle 6"
+                                BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding Timestamp, StringFormat='{0:yyyy-MM-dd HH:mm:ss}'}"
+                                       FontSize="12"
+                                       TextColor="Gray" />
+                                <Label Text="{Binding Message}"
+                                       FontSize="14" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <HorizontalStackLayout Grid.Row="1" HorizontalOptions="Center" Spacing="15" Margin="0,10,0,0">
+            <Button x:Name="btnRefreshLogs"
+                    Text="Refresh"
+                    Clicked="btnRefreshLogs_Clicked"
+                    BackgroundColor="{AppThemeBinding Light=SlateBlue, Dark=CornflowerBlue}"
+                    TextColor="White"
+                    WidthRequest="150" />
+            <Button x:Name="btnClearLogs"
+                    Text="Clear Logs"
+                    Clicked="btnClearLogs_Clicked"
+                    BackgroundColor="IndianRed"
+                    TextColor="White"
+                    WidthRequest="150" />
+        </HorizontalStackLayout>
+    </Grid>
+
+</ContentPage>

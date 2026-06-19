@@ -3,6 +3,7 @@ using Android.Content;
 using Android.OS;
 using Android.Widget;
 using AndroidX.Core.App;
+using BatteryMonitor.Data;
 using BatteryMonitor.Languages;
 using BatteryMonitor.Shared;
 
@@ -12,18 +13,30 @@ namespace BatteryMonitor.Platforms.Android;
 internal class BackgroundService : Service
 {
     int myId = (new object()).GetHashCode();
-    private readonly IBinder binder = new LocalBinder();
+    int alertId = (new object()).GetHashCode();
+    private readonly IBinder binder;
     int lowLevel = 0;
     int highLevel = 0;
     DateTime lastNotificationTime = DateTime.MinValue;
     NotificationCompat.Builder? notificationBuilder;
+    BatteryChangedReceiver? batteryReceiver;
 
-    private const long CheckIntervalMs = (long)(1 * 60 * 1000); // 1 minute
+    public BackgroundService()
+    {
+        binder = new LocalBinder(this);
+    }
 
 
     public class LocalBinder : Binder
     {
-        public BackgroundService GetService() => this.GetService();
+        private readonly BackgroundService _service;
+
+        public LocalBinder(BackgroundService service)
+        {
+            _service = service;
+        }
+
+        public BackgroundService GetService() => _service;
     }
 
 
@@ -35,15 +48,7 @@ internal class BackgroundService : Service
 
     public override StartCommandResult OnStartCommand(Intent? intent, StartCommandFlags flags, int startId)
     {
-        if (intent?.Action == BatteryCheckAlarmReceiver.ActionCheckBattery)
-        {
-            // Alarm fired — perform the battery check, then schedule the next one
-            CheckBattery();
-            ScheduleNextAlarm();
-            return StartCommandResult.Sticky;
-        }
-
-        // Initial start — build the foreground notification
+        // Build the foreground notification
         var notificationIntent = new Intent(this, typeof(MainActivity));
         notificationIntent.SetAction("USER_TAPPED_NOTIFICATION");
 
@@ -58,55 +63,59 @@ internal class BackgroundService : Service
 
         StartForeground(myId, notificationBuilder.Build());
 
-        // Schedule the first alarm
-        ScheduleNextAlarm();
+        // Listen for battery changes from the OS
+        RegisterBatteryReceiver();
+
+        _ = AppLogService.Instance.LogAsync("Background service started.");
 
         return StartCommandResult.Sticky;
     }
 
 
-    private void ScheduleNextAlarm()
+    private void RegisterBatteryReceiver()
     {
-        var alarmManager = (AlarmManager?)GetSystemService(AlarmService);
-        if (alarmManager == null) return;
+        if (batteryReceiver != null) return;
 
-        var intent = new Intent(this, typeof(BatteryCheckAlarmReceiver));
-        intent.SetAction(BatteryCheckAlarmReceiver.ActionCheckBattery);
-
-        var pendingIntent = PendingIntent.GetBroadcast(
-            this, 0, intent,
-            PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
-
-        var triggerAtMs = SystemClock.ElapsedRealtime() + CheckIntervalMs;
-
-        alarmManager.SetExactAndAllowWhileIdle(
-            AlarmType.ElapsedRealtimeWakeup,
-            triggerAtMs,
-            pendingIntent);
+        batteryReceiver = new BatteryChangedReceiver(this);
+        var filter = new IntentFilter(Intent.ActionBatteryChanged);
+        RegisterReceiver(batteryReceiver, filter);
     }
 
 
-    private void CancelAlarm()
+    private void UnregisterBatteryReceiver()
     {
-        var alarmManager = (AlarmManager?)GetSystemService(AlarmService);
-        if (alarmManager == null) return;
-
-        var intent = new Intent(this, typeof(BatteryCheckAlarmReceiver));
-        intent.SetAction(BatteryCheckAlarmReceiver.ActionCheckBattery);
-
-        var pendingIntent = PendingIntent.GetBroadcast(
-            this, 0, intent,
-            PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
-
-        if (pendingIntent != null)
-            alarmManager.Cancel(pendingIntent);
+        if (batteryReceiver != null)
+        {
+            UnregisterReceiver(batteryReceiver);
+            batteryReceiver = null;
+        }
     }
 
 
     public override void OnDestroy()
     {
-        CancelAlarm();
+        UnregisterBatteryReceiver();
+        _ = AppLogService.Instance.LogAsync("Background service stopped.");
         base.OnDestroy();
+    }
+
+
+    private class BatteryChangedReceiver : BroadcastReceiver
+    {
+        private readonly BackgroundService service;
+
+        public BatteryChangedReceiver(BackgroundService service)
+        {
+            this.service = service;
+        }
+
+        public override void OnReceive(Context? context, Intent? intent)
+        {
+            if (intent?.Action == Intent.ActionBatteryChanged)
+            {
+                service.CheckBattery();
+            }
+        }
     }
 
 
@@ -132,26 +141,69 @@ internal class BackgroundService : Service
         var cooldownElapsed = elapsedTime.TotalMinutes >= cooldownMinutes;
 
         // Debug info
-        if (!cooldownElapsed) System.Diagnostics.Debug.WriteLine($"Notification checked but delayed (elapsed ms: {elapsedTime.TotalMilliseconds}).");
-        else System.Diagnostics.Debug.WriteLine($"Notification checked and showed (elapsed ms: {elapsedTime.TotalMilliseconds}).");
+        if (!cooldownElapsed) 
+            System.Diagnostics.Debug.WriteLine($"Notification checked but delayed (elapsed ms: {elapsedTime.TotalMilliseconds}).");
+        else 
+            System.Diagnostics.Debug.WriteLine($"Notification checked and showed (elapsed ms: {elapsedTime.TotalMilliseconds}).");
         // Debug info
 
         if (notificationBuilder == null) return;
 
-        if (batteryLevel <= lowLevel && BatteryUtility.GetBatteryStatus() != BatteryState.Charging && cooldownElapsed)
+        _ = AppLogService.Instance.LogAsync($"Battery intent triggered. Level: {batteryLevel}%, State: {BatteryUtility.GetBatteryStatus()}, Cooldown elapsed: {cooldownElapsed}.");
+
+        if (batteryLevel <= lowLevel && BatteryUtility.GetBatteryStatus() != BatteryState.Charging)
         {
-            notificationBuilder.SetContentTitle(Strings.NotificationTitle);
-            notificationBuilder.SetContentText($"{Strings.WarningLowLevel} ({batteryLevel}%)");
-            StartForeground(myId, notificationBuilder.Build());
-            lastNotificationTime = now;
+            if (cooldownElapsed)
+            {
+                var text = $"{Strings.WarningLowLevel} ({batteryLevel}%)";
+                notificationBuilder.SetContentTitle(Strings.NotificationTitle);
+                notificationBuilder.SetContentText(text);
+                StartForeground(myId, notificationBuilder.Build());
+                SendAlertNotification(text);
+                lastNotificationTime = now;
+                _ = AppLogService.Instance.LogAsync($"Low battery notification shown: {text}");
+            }
+            else
+            {
+                _ = AppLogService.Instance.LogAsync($"Low battery notification bypassed due to cooldown (elapsed: {elapsedTime.TotalSeconds:F0}s, required: {cooldownMinutes}min).");
+            }
         }
 
         if (batteryLevel >= highLevel && BatteryUtility.GetBatteryStatus() == BatteryState.Charging && cooldownElapsed)
         {
-            notificationBuilder.SetContentTitle(Strings.NotificationTitle);
-            notificationBuilder.SetContentText($"{Strings.WarningHighLevel} ({batteryLevel}%)");
-            StartForeground(myId, notificationBuilder.Build());
-            lastNotificationTime = now;
+            if (cooldownElapsed)
+            {
+                var text = $"{Strings.WarningHighLevel} ({batteryLevel}%)";
+                notificationBuilder.SetContentTitle(Strings.NotificationTitle);
+                notificationBuilder.SetContentText(text);
+                StartForeground(myId, notificationBuilder.Build());
+                SendAlertNotification(text);
+                lastNotificationTime = now;
+                _ = AppLogService.Instance.LogAsync($"High battery notification shown: {text}");
+            }
+            else
+            {
+                _ = AppLogService.Instance.LogAsync($"High battery notification bypassed due to cooldown (elapsed: {elapsedTime.TotalSeconds:F0}s, required: {cooldownMinutes}min).");
+            }
         }
+    }
+
+
+    private void SendAlertNotification(string text)
+    {
+        var notificationIntent = new Intent(this, typeof(MainActivity));
+        notificationIntent.SetAction("USER_TAPPED_NOTIFICATION");
+        var pendingIntent = PendingIntent.GetActivity(this, 0, notificationIntent, PendingIntentFlags.Immutable);
+
+        var alertNotification = new NotificationCompat.Builder(this, MainApplication.ChannelIdLevelChanges)
+            .SetSmallIcon(Resource.Drawable.iconbattery32)
+            .SetPriority(NotificationCompat.PriorityHigh)
+            .SetContentTitle(Strings.NotificationTitle)
+            .SetContentText(text)
+            .SetContentIntent(pendingIntent)
+            .SetAutoCancel(true)
+            .Build();
+
+        NotificationManagerCompat.From(this).Notify(alertId, alertNotification);
     }
 }

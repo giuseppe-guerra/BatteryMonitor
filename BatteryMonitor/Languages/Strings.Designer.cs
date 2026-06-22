@@ -133,7 +133,7 @@ namespace BatteryMonitor.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Battery Monitor Warning.
         /// </summary>
         internal static string Notification_Title {
             get {
@@ -142,7 +142,7 @@ namespace BatteryMonitor.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Battery levels changes.
+        ///   Looks up a localized string similar to Battery Monitor Service.
         /// </summary>
         internal static string NotificationChannelName {
             get {
@@ -160,7 +160,7 @@ namespace BatteryMonitor.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Battery Monitor Warning.
+        ///   Looks up a localized string similar to Battery Levels Changes.
         /// </summary>
         internal static string NotificationTitle {
             get {

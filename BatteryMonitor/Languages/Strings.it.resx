@@ -139,11 +139,10 @@
     <value>Livello Minimo</value>
   </data>
   <data name="NotificationChannelName" xml:space="preserve">
-    <value>Raggiungimento soglie</value>
+    <value>Battery Monitor Service</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="NotificationTitle" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
+  <data name="NotificationTitle" xml:space="preserve">
+    <value>Alert Raggiungimento Soglie</value>
   </data>
   <data name="NotRunning" xml:space="preserve">
     <value>Non attivo</value>

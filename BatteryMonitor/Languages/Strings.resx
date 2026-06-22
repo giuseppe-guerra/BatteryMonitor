@@ -139,10 +139,10 @@
     <value>Min Level</value>
   </data>
   <data name="NotificationChannelName" xml:space="preserve">
-    <value>Battery levels changes</value>
+    <value>Battery Monitor Service</value>
   </data>
   <data name="NotificationTitle" xml:space="preserve">
-    <value>Battery Monitor Warning</value>
+    <value>Battery Levels Changes</value>
   </data>
   <data name="NotRunning" xml:space="preserve">
     <value>Not running</value>
@@ -172,7 +172,7 @@
     <value>Low Level!</value>
   </data>
   <data name="Notification Title" xml:space="preserve">
-    <value />
+    <value>Battery Monitor Warning</value>
   </data>
   <data name="AppTheme" xml:space="preserve">
     <value>App Theme</value>

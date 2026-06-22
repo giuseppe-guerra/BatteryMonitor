@@ -26,7 +26,7 @@ public class AppLogService
         var db = await GetDatabaseAsync();
         var entry = new LogEntry
         {
-            Timestamp = DateTime.UtcNow,
+            Timestamp = DateTime.Now,
             Message = message
         };
         await db.InsertAsync(entry);

@@ -31,6 +31,11 @@ internal class BackgroundService : Service
         binder = new LocalBinder(this);
     }
 
+    public BackgroundService()
+    {
+        binder = new LocalBinder(this);
+    }
+
 
     public class LocalBinder : Binder
     {
@@ -101,7 +106,7 @@ internal class BackgroundService : Service
         var notificationIntent = new Intent(this, typeof(MainActivity));
         notificationIntent.SetAction("USER_TAPPED_NOTIFICATION");
 
-        var pendingIntent = PendingIntent.GetActivity(this, 0, notificationIntent, PendingIntentFlags.Immutable);
+        var pendingIntent = PendingIntent.GetActivity(this, 0, notificationIntent, PendingIntentFlags.Immutable | PendingIntentFlags.UpdateCurrent);
 
         var notification = new NotificationCompat.Builder(this, MainApplication.ChannelIdService)
             .SetSmallIcon(Resource.Drawable.iconbattery32)
@@ -281,5 +286,26 @@ internal class BackgroundService : Service
             .Build();
 
         NotificationManagerCompat.From(this).Notify(alertId, alertNotification);
+    }
+
+    public override void OnDestroy()
+    {
+        try
+        {
+            timer?.Dispose();
+            timer = null;
+        }
+        catch { }
+
+        try
+        {
+            StopForeground(true);
+        }
+        catch { }
+
+        AndroidServiceManager.IsRunning = false;
+        Preferences.Default.Set(Constants.SERVICE_RUNNING, false);
+
+        base.OnDestroy();
     }
 }

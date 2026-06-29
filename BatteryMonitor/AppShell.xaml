@@ -43,6 +43,13 @@
         <ShellContent Route="Settings" ContentTemplate="{DataTemplate local:SettingsPage}"></ShellContent>
     </FlyoutItem>
 
+    <FlyoutItem Title="{x:Static lang:Strings.LogsSection}" 
+            FlyoutIcon="{AppThemeBinding 
+                Dark={FontImage FontFamily=FontAwesomeSolid, Color=White, Glyph={x:Static shared:Constants.IconFont_Log}},
+                Light={FontImage FontFamily=FontAwesomeSolid, Color=Black, Glyph={x:Static shared:Constants.IconFont_Log}}}">
+        <ShellContent Route="Logs" ContentTemplate="{DataTemplate local:LogsPage}"></ShellContent>
+    </FlyoutItem>
+
     <FlyoutItem Title="{x:Static lang:Strings.About}" 
                 FlyoutIcon="{AppThemeBinding 
                      Dark={FontImage FontFamily=FontAwesomeSolid, Color=White, Glyph={x:Static shared:Constants.IconFont_About}},

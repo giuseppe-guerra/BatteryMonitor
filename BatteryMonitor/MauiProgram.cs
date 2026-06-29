@@ -37,6 +37,9 @@ namespace BatteryMonitor
     		builder.Logging.AddDebug();
 #endif
 
+            // Loads the correct 16 KB - aligned libe_sqlite3.so
+            SQLitePCL.Batteries_V2.Init();
+
             return builder.Build();
         }
     }

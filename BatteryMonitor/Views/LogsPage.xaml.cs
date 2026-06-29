@@ -1,4 +1,6 @@
 using BatteryMonitor.Data;
+using BatteryMonitor.Languages;
+using BatteryMonitor.Shared;
 
 namespace BatteryMonitor;
 
@@ -11,33 +13,24 @@ public partial class LogsPage : ContentPage
     {
         InitializeComponent();
         _logService = logService;
+        LogSwitch.IsToggled = Preferences.Default.Get(Constants.LOG_ENABLED, false);
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        LogSwitch.IsToggled = Preferences.Default.Get(Constants.LOG_ENABLED, false);
         await LoadLogsAsync();
-        StartAutoRefresh();
     }
 
     protected override void OnDisappearing()
     {
-        StopAutoRefresh();
         base.OnDisappearing();
     }
 
-    private void StartAutoRefresh()
+    private void LogSwitch_Toggled(object sender, ToggledEventArgs e)
     {
-        _refreshTimer = Dispatcher.CreateTimer();
-        _refreshTimer.Interval = TimeSpan.FromSeconds(10);
-        _refreshTimer.Tick += async (s, e) => await LoadLogsAsync();
-        _refreshTimer.Start();
-    }
-
-    private void StopAutoRefresh()
-    {
-        _refreshTimer?.Stop();
-        _refreshTimer = null;
+        Preferences.Default.Set(Constants.LOG_ENABLED, e.Value);
     }
 
     private async Task LoadLogsAsync()
@@ -59,7 +52,7 @@ public partial class LogsPage : ContentPage
 
     private async void btnClearLogs_Clicked(object sender, EventArgs e)
     {
-        bool confirm = await DisplayAlertAsync("Clear Logs", "Are you sure you want to delete all logs?", "Yes", "No");
+        bool confirm = await DisplayAlertAsync(Strings.ClearLogs, Strings.ClearLogsConfirmation, Strings.Yes, Strings.No);
         if (confirm)
         {
             await _logService.ClearLogsAsync();

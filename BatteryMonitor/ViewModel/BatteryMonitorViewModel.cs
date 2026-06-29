@@ -24,5 +24,8 @@ public partial class BatteryMonitorViewModel : ObservableObject
     [ObservableProperty]
     private string serviceStatus;
 
+    [ObservableProperty]
+    private bool isLoggingEnabled;
+
     public bool IsNotServiceRunning => !IsServiceRunning;
 }

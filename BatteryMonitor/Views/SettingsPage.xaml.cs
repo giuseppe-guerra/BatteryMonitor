@@ -5,25 +5,20 @@ namespace BatteryMonitor;
 
 public partial class SettingsPage : ContentPage
 {
-    private readonly BatteryMonitorViewModel viewModel;
+	private readonly BatteryMonitorViewModel viewModel;
 
-    public SettingsPage(BatteryMonitorViewModel viewModel)
+	public SettingsPage(BatteryMonitorViewModel viewModel)
 	{
 		InitializeComponent();
 		BindingContext = viewModel;
 
-        this.viewModel = viewModel;
-    }
+		this.viewModel = viewModel;
+	}
 
     private async void btnSave_Clicked(object sender, EventArgs e)
     {
         SetPreferences();
         await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
-    }
-
-    private async void btnViewLogs_Clicked(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync(nameof(LogsPage));
     }
 
     private void SetPreferences()

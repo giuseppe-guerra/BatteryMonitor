@@ -1,3 +1,4 @@
+using BatteryMonitor.Shared;
 using SQLite;
 
 namespace BatteryMonitor.Data;
@@ -23,6 +24,9 @@ public class AppLogService
 
     public async Task LogAsync(string message)
     {
+        if (!Preferences.Default.Get(Constants.LOG_ENABLED, false))
+            return;
+
         var db = await GetDatabaseAsync();
         var entry = new LogEntry
         {

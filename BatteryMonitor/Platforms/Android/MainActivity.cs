@@ -61,8 +61,13 @@ namespace BatteryMonitor
 
         public void StopService()
         {
+            // Send an explicit stop action so the service cancels its alarm
+            // before shutting down. Using context.StopService() would trigger
+            // OnDestroy without giving the service a chance to cancel the alarm,
+            // causing it to auto-restart via the alarm.
             var serviceIntent = new Intent(this, typeof(BackgroundService));
-            StopService(serviceIntent);
+            serviceIntent.SetAction(BackgroundService.ActionStopService);
+            StartService(serviceIntent);
 
             AndroidServiceManager.IsRunning = false;
         }

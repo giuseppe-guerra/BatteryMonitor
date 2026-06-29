@@ -1,4 +1,4 @@
-﻿using Android.App;
+using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Widget;
@@ -12,6 +12,9 @@ namespace BatteryMonitor.Platforms.Android;
 [Service(ForegroundServiceType = global::Android.Content.PM.ForegroundService.TypeSpecialUse)]
 internal class BackgroundService : Service
 {
+    const string ActionPeriodicCheck = "com.toyokenstudio.batterymonitor.ACTION_PERIODIC_CHECK";
+    public const string ActionStopService = "com.toyokenstudio.batterymonitor.ACTION_STOP_SERVICE";
+
     int myId = (new object()).GetHashCode();
     int alertId = (new object()).GetHashCode();
     private readonly IBinder binder;
@@ -19,8 +22,9 @@ internal class BackgroundService : Service
     int highLevel = 0;
     DateTime lastNotificationTime = DateTime.MinValue;
     BatteryChangedReceiver? batteryReceiver;
-    Handler? handler;
-    PowerManager.WakeLock? wakeLock;
+    AlarmManager? alarmManager;
+    PendingIntent? alarmPendingIntent;
+    bool isForeground;
 
     public BackgroundService()
     {
@@ -49,76 +53,104 @@ internal class BackgroundService : Service
 
     public override StartCommandResult OnStartCommand(Intent? intent, StartCommandFlags flags, int startId)
     {
-        AcquireWakeLock();
+        // User explicitly requested stop -> cancel alarm and shut down.
+        if (intent?.Action == ActionStopService)
+        {
+            CancelAlarm();
+            StopForeground(StopForegroundFlags.Remove);
+            StopSelf();
+            return StartCommandResult.NotSticky;
+        }
 
-        // Build the foreground notification
-        var notificationIntent = new Intent(this, typeof(MainActivity));
-        notificationIntent.SetAction("USER_TAPPED_NOTIFICATION");
+        // Ensure we are always in foreground state.
+        // Required both on first start AND when the alarm restarts the service
+        // after the OS killed it (Android crashes the app if startForegroundService
+        // is not followed by startForeground within 5 seconds).
+        EnsureForeground();
 
-        var pendingIntent = PendingIntent.GetActivity(this, 0, notificationIntent, PendingIntentFlags.Immutable);
-
-        var notificationBuilder = new NotificationCompat.Builder(this, MainApplication.ChannelIdService)
-            .SetSmallIcon(Resource.Drawable.iconbattery32)
-            .SetPriority(NotificationCompat.PriorityLow)
-            .SetContentTitle(Strings.AppTitle)
-            .SetContentText(Strings.ServiceStarted)
-            .SetContentIntent(pendingIntent)
-            .SetOngoing(true);
-
-        StartForeground(myId, notificationBuilder.Build());
-
-        // Listen for battery changes from the OS
+        // Ensure battery receiver is registered (needed after OS-kill restart).
         RegisterBatteryReceiver();
 
-        // Periodic fallback: re-check battery even if broadcasts stop
-        StartPeriodicCheck();
+        // If triggered by the safety-net alarm, check battery now.
+        if (intent?.Action == ActionPeriodicCheck)
+        {
+            System.Diagnostics.Debug.WriteLine("Background service: alarm-triggered check.");
+            CheckBattery();
+        }
+        else
+        {
+            // First start or Sticky restart after OS kill.
+            System.Diagnostics.Debug.WriteLine("Background service started.");
+        }
 
-        _ = AppLogService.Instance.LogAsync("Background service started.");
+        // Always (re)schedule the next alarm.
+        ScheduleNextAlarm();
 
         return StartCommandResult.Sticky;
     }
 
 
-    private void AcquireWakeLock()
+    /// <summary>
+    /// Puts the service in foreground with a persistent notification.
+    /// Only posts the notification once; subsequent calls are no-ops.
+    /// </summary>
+    private void EnsureForeground()
     {
-        if (wakeLock == null)
+        if (isForeground) return;
+
+        var notificationIntent = new Intent(this, typeof(MainActivity));
+        notificationIntent.SetAction("USER_TAPPED_NOTIFICATION");
+
+        var pendingIntent = PendingIntent.GetActivity(this, 0, notificationIntent, PendingIntentFlags.Immutable);
+
+        var notification = new NotificationCompat.Builder(this, MainApplication.ChannelIdService)
+            .SetSmallIcon(Resource.Drawable.iconbattery32)
+            .SetPriority(NotificationCompat.PriorityLow)
+            .SetContentTitle(Strings.AppTitle)
+            .SetContentText(Strings.ServiceStarted)
+            .SetContentIntent(pendingIntent)
+            .SetOngoing(true)
+            .Build();
+
+        StartForeground(myId, notification);
+        isForeground = true;
+    }
+
+
+    private void ScheduleNextAlarm()
+    {
+        alarmManager ??= (AlarmManager?)GetSystemService(AlarmService);
+        if (alarmManager == null) return;
+
+        if (alarmPendingIntent == null)
         {
-            var powerManager = (PowerManager?)GetSystemService(PowerService);
-            wakeLock = powerManager?.NewWakeLock(WakeLockFlags.Partial, "BatteryMonitor::ServiceWakeLock");
-            wakeLock?.Acquire();
+            var alarmIntent = new Intent(this, typeof(BackgroundService));
+            alarmIntent.SetAction(ActionPeriodicCheck);
+            alarmPendingIntent = PendingIntent.GetForegroundService(
+                this, 0, alarmIntent, PendingIntentFlags.Immutable | PendingIntentFlags.UpdateCurrent);
         }
+
+        var triggerAtMs = SystemClock.ElapsedRealtime() + Constants.TimerPeriod;
+        alarmManager.SetAndAllowWhileIdle(AlarmType.ElapsedRealtimeWakeup, triggerAtMs, alarmPendingIntent);
     }
 
 
-    private void ReleaseWakeLock()
+    private void CancelAlarm()
     {
-        if (wakeLock is { IsHeld: true })
+        alarmManager ??= (AlarmManager?)GetSystemService(AlarmService);
+
+        // Build a matching PendingIntent to cancel (in case the field was lost on process death).
+        var alarmIntent = new Intent(this, typeof(BackgroundService));
+        alarmIntent.SetAction(ActionPeriodicCheck);
+        var pi = PendingIntent.GetForegroundService(
+            this, 0, alarmIntent, PendingIntentFlags.Immutable | PendingIntentFlags.NoCreate);
+
+        if (pi != null)
         {
-            wakeLock.Release();
-            wakeLock = null;
+            alarmManager?.Cancel(pi);
         }
-    }
 
-
-    private void StartPeriodicCheck()
-    {
-        handler ??= new Handler(Looper.MainLooper!);
-        handler.RemoveCallbacksAndMessages(null);
-        handler.PostDelayed(PeriodicCheckRunnable, Constants.TimerPeriod);
-    }
-
-
-    private void StopPeriodicCheck()
-    {
-        handler?.RemoveCallbacksAndMessages(null);
-        handler = null;
-    }
-
-
-    private void PeriodicCheckRunnable()
-    {
-        CheckBattery();
-        handler?.PostDelayed(PeriodicCheckRunnable, Constants.TimerPeriod);
+        alarmPendingIntent = null;
     }
 
 
@@ -144,9 +176,10 @@ internal class BackgroundService : Service
 
     public override void OnDestroy()
     {
-        StopPeriodicCheck();
+        // Do NOT cancel the alarm here. If the OS killed us, the alarm is the
+        // safety net that will restart the service on the next trigger.
+        // The alarm is only cancelled via ActionStopService (user-initiated).
         UnregisterBatteryReceiver();
-        ReleaseWakeLock();
         _ = AppLogService.Instance.LogAsync("Background service stopped.");
         base.OnDestroy();
     }
@@ -171,9 +204,6 @@ internal class BackgroundService : Service
     }
 
 
-    /// <summary>
-    /// Action of the service: condition and what to do
-    /// </summary>
     private void CheckBattery()
     {
         try

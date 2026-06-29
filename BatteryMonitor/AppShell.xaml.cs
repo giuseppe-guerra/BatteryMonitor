@@ -8,6 +8,8 @@ namespace BatteryMonitor
         {
             InitializeComponent();
 
+            Routing.RegisterRoute(nameof(LogsPage), typeof(LogsPage));
+
             LoadThemePreference();
         }
 

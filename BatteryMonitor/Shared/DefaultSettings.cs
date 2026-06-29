@@ -6,6 +6,8 @@ public static class DefaultSettings
 
     public static int HighLevelWarningValue = 88;
 
+    public static int NotificationCooldownMinutes = 2;
+
     public static Color NotRunningColor = Colors.Red;
 
     public static Color RunningColor = Colors.LawnGreen;

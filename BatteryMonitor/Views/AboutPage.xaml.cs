@@ -1,5 +1,3 @@
-using System.Windows.Input;
-
 namespace BatteryMonitor;
 
 public partial class AboutPage : ContentPage
@@ -8,6 +6,7 @@ public partial class AboutPage : ContentPage
 	{
 		InitializeComponent();
         lblVersion.Text = AppInfo.Current.VersionString;
+        lblApplicationVersion.Text = AppInfo.Current.BuildString;
     }
 
     private void GitHubTapGestureRecognizer(object sender, TappedEventArgs e)

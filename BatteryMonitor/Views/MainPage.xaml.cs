@@ -1,4 +1,5 @@
-﻿using BatteryMonitor.Languages;
+﻿using BatteryMonitor.Data;
+using BatteryMonitor.Languages;
 using BatteryMonitor.Shared;
 using BatteryMonitor.ViewModel;
 
@@ -7,6 +8,7 @@ namespace BatteryMonitor;
 public partial class MainPage : ContentPage
 {
     private BatteryMonitorViewModel batteryMonitorModel;
+    private AppLogService _logService;
     IDispatcherTimer batteryLeveltimer = null!;
 
     protected override void OnAppearing()
@@ -16,11 +18,12 @@ public partial class MainPage : ContentPage
     }
 
 
-    public MainPage(BatteryMonitorViewModel batteryMonitorModel)
+    public MainPage(BatteryMonitorViewModel batteryMonitorModel, AppLogService logService)
     {
         InitializeComponent();
 
         this.batteryMonitorModel = batteryMonitorModel;
+        _logService = logService;
         BindingContext = batteryMonitorModel;
 
         batteryLeveltimer = Dispatcher.CreateTimer();
@@ -44,6 +47,8 @@ public partial class MainPage : ContentPage
 #endif
 
         UpdateBatteryLevel();
+
+        _ = _logService.LogAsync("App started.");
     }
 
 
@@ -60,6 +65,7 @@ public partial class MainPage : ContentPage
         StoreServiceStatus(true);
         batteryMonitorModel.ServiceStatus = Strings.Running;
         batteryMonitorModel.IsServiceRunning = true;
+        await _logService.LogAsync("Service started by the user");
     }
 
 
@@ -76,6 +82,7 @@ public partial class MainPage : ContentPage
         StoreServiceStatus(false);
         batteryMonitorModel.ServiceStatus = Strings.NotRunning;
         batteryMonitorModel.IsServiceRunning = false;
+        await _logService.LogAsync("Service stopped by the user");
     }
 
 
@@ -83,6 +90,7 @@ public partial class MainPage : ContentPage
     {
         batteryMonitorModel.MinLimit = Preferences.Default.Get(Constants.MIN_VALUE, DefaultSettings.LowLevelWarningValue);
         batteryMonitorModel.MaxLimit = Preferences.Default.Get(Constants.MAX_VALUE, DefaultSettings.HighLevelWarningValue);
+        batteryMonitorModel.NotificationCooldownMinutes = Preferences.Default.Get(Constants.NOTIFICATION_COOLDOWN, DefaultSettings.NotificationCooldownMinutes);
 
         if (Preferences.Default.Get(Constants.SERVICE_RUNNING, false))
         {
@@ -95,7 +103,7 @@ public partial class MainPage : ContentPage
     {
         if (await Permissions.RequestAsync<Permissions.PostNotifications>() != PermissionStatus.Granted)
         {
-            await DisplayAlert(Strings.AppTitle, Strings.PermissionDescription, "OK");
+            await DisplayAlertAsync(Strings.AppTitle, Strings.PermissionDescription, "OK");
             return;
         }
     }

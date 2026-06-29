@@ -5,15 +5,15 @@ namespace BatteryMonitor;
 
 public partial class SettingsPage : ContentPage
 {
-    private readonly BatteryMonitorViewModel viewModel;
+	private readonly BatteryMonitorViewModel viewModel;
 
-    public SettingsPage(BatteryMonitorViewModel viewModel)
+	public SettingsPage(BatteryMonitorViewModel viewModel)
 	{
 		InitializeComponent();
 		BindingContext = viewModel;
 
-        this.viewModel = viewModel;
-    }
+		this.viewModel = viewModel;
+	}
 
     private async void btnSave_Clicked(object sender, EventArgs e)
     {
@@ -25,6 +25,7 @@ public partial class SettingsPage : ContentPage
     {
         Preferences.Default.Set(Constants.MIN_VALUE, viewModel.MinLimit);
         Preferences.Default.Set(Constants.MAX_VALUE, viewModel.MaxLimit);
+        Preferences.Default.Set(Constants.NOTIFICATION_COOLDOWN, viewModel.NotificationCooldownMinutes);
     }
 
     protected override void OnNavigatingFrom(NavigatingFromEventArgs args)

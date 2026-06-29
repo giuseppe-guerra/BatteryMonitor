@@ -29,8 +29,8 @@
                 </Label.FormattedText>
             </Label>
 
-            <Label Margin="0, 50, 0, 0" Text="Developed by" HorizontalOptions="End" TextColor="{AppThemeBinding Light=LightSlateGray, Dark=MediumPurple}"/>
-            <Label Text="Giuseppe Guerra" TextColor="CornflowerBlue" FontAttributes="Bold" HorizontalOptions="EndAndExpand"/>
+            <Label Margin="0, 50, 0, 0" Text="Developed by" HorizontalOptions="End" TextColor="{AppThemeBinding Light=LightSlateGray, Dark=MediumPurple}" />
+            <Label Text="Giuseppe Guerra" TextColor="CornflowerBlue" FontAttributes="Bold" HorizontalOptions="End" />
 
             <Label HorizontalOptions="End">
                 <Label.FormattedText>
@@ -49,7 +49,10 @@
 
             <Label Text="Version" TextColor="{AppThemeBinding Light=LightSlateGray, Dark=MediumPurple}" HorizontalOptions="End" Margin="0, 20, 0, 0"/>
             <Label x:Name="lblVersion" TextColor="CornflowerBlue" HorizontalOptions="End" />
-            
+
+            <Label Text="Build" TextColor="{AppThemeBinding Light=LightSlateGray, Dark=MediumPurple}" HorizontalOptions="End" Margin="0, 20, 0, 0"/>
+            <Label x:Name="lblApplicationVersion" TextColor="CornflowerBlue" HorizontalOptions="End" />
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

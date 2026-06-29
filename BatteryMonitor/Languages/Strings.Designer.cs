@@ -19,7 +19,7 @@ namespace BatteryMonitor.Languages {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Strings {
@@ -88,7 +88,7 @@ namespace BatteryMonitor.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Current level.
+        ///   Looks up a localized string similar to Current Level.
         /// </summary>
         internal static string BatteryLevel {
             get {
@@ -106,11 +106,29 @@ namespace BatteryMonitor.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enable Log.
+        /// </summary>
+        internal static string EnableLog {
+            get {
+                return ResourceManager.GetString("EnableLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Home.
         /// </summary>
         internal static string Home {
             get {
                 return ResourceManager.GetString("Home", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logs.
+        /// </summary>
+        internal static string LogsSection {
+            get {
+                return ResourceManager.GetString("LogsSection", resourceCulture);
             }
         }
         
@@ -133,7 +151,16 @@ namespace BatteryMonitor.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to No logs available..
+        /// </summary>
+        internal static string NoLogs {
+            get {
+                return ResourceManager.GetString("NoLogs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Battery Monitor - Warning.
         /// </summary>
         internal static string Notification_Title {
             get {
@@ -142,7 +169,7 @@ namespace BatteryMonitor.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Battery levels changes.
+        ///   Looks up a localized string similar to Battery Monitor Service.
         /// </summary>
         internal static string NotificationChannelName {
             get {
@@ -151,7 +178,16 @@ namespace BatteryMonitor.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Battery Monitor Warning.
+        ///   Looks up a localized string similar to Delay between notification (minutes).
+        /// </summary>
+        internal static string NotificationCooldown {
+            get {
+                return ResourceManager.GetString("NotificationCooldown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Battery Levels Changes.
         /// </summary>
         internal static string NotificationTitle {
             get {
@@ -223,6 +259,15 @@ namespace BatteryMonitor.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to View Logs.
+        /// </summary>
+        internal static string ViewLogs {
+            get {
+                return ResourceManager.GetString("ViewLogs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Battery Charged!.
         /// </summary>
         internal static string WarningHighLevel {
@@ -237,6 +282,42 @@ namespace BatteryMonitor.Languages {
         internal static string WarningLowLevel {
             get {
                 return ResourceManager.GetString("WarningLowLevel", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Clear Logs.
+        /// </summary>
+        internal static string ClearLogs {
+            get {
+                return ResourceManager.GetString("ClearLogs", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete all logs?.
+        /// </summary>
+        internal static string ClearLogsConfirmation {
+            get {
+                return ResourceManager.GetString("ClearLogsConfirmation", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Yes.
+        /// </summary>
+        internal static string Yes {
+            get {
+                return ResourceManager.GetString("Yes", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to No.
+        /// </summary>
+        internal static string No {
+            get {
+                return ResourceManager.GetString("No", resourceCulture);
             }
         }
     }

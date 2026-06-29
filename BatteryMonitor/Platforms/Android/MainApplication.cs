@@ -8,8 +8,8 @@ namespace BatteryMonitor
     [Application]
     public class MainApplication : MauiApplication
     {
-        public static readonly string ChannelIdLevelChanges = "batteryBackgroundServiceChannel";
-        // public static readonly string ChannelIdServiceDown = "batteryBackgroundServiceDown";
+        public static readonly string ChannelIdService = "batteryBackgroundServiceChannel";
+        public static readonly string ChannelIdAlerts = "batteryAlertChannel";
 
         public MainApplication(IntPtr handle, JniHandleOwnership ownership)
             : base(handle, ownership)
@@ -25,11 +25,17 @@ namespace BatteryMonitor
             if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
             {
 #pragma warning disable CA1416
-                var serviceChannelForLevelChanges = new NotificationChannel(ChannelIdLevelChanges, Strings.NotificationChannelName, NotificationImportance.High);
+                var serviceChannel = new NotificationChannel(ChannelIdService, Strings.NotificationChannelName, NotificationImportance.Low);
+                serviceChannel.SetShowBadge(false);
+
+                var alertChannel = new NotificationChannel(ChannelIdAlerts, Strings.NotificationTitle, NotificationImportance.High);
+                alertChannel.EnableVibration(true);
+                alertChannel.LockscreenVisibility = NotificationVisibility.Public;
 
                 if (GetSystemService(NotificationService) is NotificationManager manager)
                 {
-                    manager.CreateNotificationChannel(serviceChannelForLevelChanges);
+                    manager.CreateNotificationChannel(serviceChannel);
+                    manager.CreateNotificationChannel(alertChannel);
                 }
 #pragma warning restore CA1416
             }
